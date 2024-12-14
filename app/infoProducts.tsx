@@ -7,19 +7,18 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Button,
+  TouchableHighlight,
 } from "react-native";
 import StartPage from "@/components/startPage";
 import Products from "@/components/products";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-import { useRoute } from '@react-navigation/native';
-import { RouteProp } from '@react-navigation/native'; 
-import { RootStackParamList } from './navigationTypes'; 
+import { useRoute } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
+import { RootStackParamList } from "./navigationTypes";
+import { useNavigation } from "@react-navigation/native";
 
-
-type InfoProductsRouteProp = RouteProp<RootStackParamList, 'InfoProducts'>;
-
-
+type InfoProductsRouteProp = RouteProp<RootStackParamList, "InfoProducts">;
 
 const StarRating = () => {
   const [rating, setRating] = useState(0);
@@ -33,9 +32,9 @@ const StarRating = () => {
       {[...Array(5)].map((_, index) => (
         <TouchableOpacity key={index} onPress={() => handleRating(index)}>
           <Ionicons
-            name={index < rating ? "star" : "star-outline"} 
+            name={index < rating ? "star" : "star-outline"}
             size={24}
-            color="#FFD700" 
+            color="#FFD700"
           />
         </TouchableOpacity>
       ))}
@@ -44,7 +43,7 @@ const StarRating = () => {
 };
 
 const QuantityControl = () => {
-  const [quantity, setQuantity] = useState(1); 
+  const [quantity, setQuantity] = useState(1);
 
   const increaseQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -52,17 +51,17 @@ const QuantityControl = () => {
 
   const decreaseQuantity = () => {
     if (quantity > 1) {
-      setQuantity((prev) => prev - 1); 
+      setQuantity((prev) => prev - 1);
     }
   };
 
   return (
     <View style={styles.quantityContainer}>
-      <TouchableOpacity onPress={decreaseQuantity} style={styles.button}>
+      <TouchableOpacity onPress={decreaseQuantity} style={styles.buttonMinus}>
         <Ionicons name="remove-circle-outline" size={30} color="black" />
       </TouchableOpacity>
       <Text style={styles.quantityText}>{quantity}</Text>
-      <TouchableOpacity onPress={increaseQuantity} style={styles.button}>
+      <TouchableOpacity onPress={increaseQuantity} style={styles.buttonMinus}>
         <Ionicons name="add-circle-outline" size={30} color="black" />
       </TouchableOpacity>
     </View>
@@ -70,13 +69,12 @@ const QuantityControl = () => {
 };
 
 const InfoProducts = () => {
-  
   const route = useRoute<InfoProductsRouteProp>();
-  const { productId } = route.params; 
+  const { productId } = route.params;
+  const navigation = useNavigation();
+  const products = Products();
 
-  const products = Products(); 
-
-  const product = products.find(item => item.id === productId);
+  const product = products.find((item) => item.id === productId);
 
   if (!product) {
     return (
@@ -106,8 +104,12 @@ const InfoProducts = () => {
 
           <QuantityControl />
         </View>
-
-        <Button title="Comprar agora"  />
+         
+          <TouchableOpacity style={styles.button}
+            style={styles.button}
+            onPress={() => navigation.navigate("Pedido")}>
+            <Text style={styles.buttonText}>Comprar Agora</Text>
+          </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -137,6 +139,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+
+    marginTop: 25
   },
   infoprodutos: {
     fontSize: 16,
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
 
-    width: "100%"
+    width: "100%",
   },
   quantityContainer: {
     flexDirection: "row",
@@ -170,7 +174,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 15,
   },
-  button: {
+  buttonMinus: {
     paddingHorizontal: 10,
   },
   quantityText: {
@@ -178,8 +182,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 20,
   },
+  button: {
+    backgroundColor: "#6f4f1f", // Cor tonalidade café
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
 
-  
+    marginTop: 50,
+    width: 250,
+    height: 100
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
 });
 
 export default InfoProducts;
